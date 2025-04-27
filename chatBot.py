@@ -11,8 +11,6 @@ import time
 from selenium.webdriver.chrome.options import Options
 import threading
 
-#Ajustes visuais
-
 lineup_cs_names = []
 lineup_cs = []
 lineup_cs_html = ""
