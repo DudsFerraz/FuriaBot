@@ -1,11 +1,6 @@
 from dotenv import load_dotenv
 import os
-load_dotenv()
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-
 import telebot
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
-
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -14,6 +9,11 @@ from selenium import webdriver
 import time
 from selenium.webdriver.chrome.options import Options
 import threading
+from flask import Flask
+
+load_dotenv()
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
 lineup_cs_names = []
 lineup_cs = []
@@ -42,6 +42,16 @@ matches_kl_text = ""
 table_kl_html = ""
 table_kl_text = ""
 
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Bot is running.'
+
+def run_flask():
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
 def escape_markdown_v2(text: str) -> str:
     escape_chars = r'_*[]()~`>#+-=|{}.!'
@@ -676,11 +686,6 @@ Para que possamos interagir, escolha uma das opções abaixo:
 """
     bot.send_message(message.chat.id,text,parse_mode="MarkdownV2")
 
+threading.Thread(target=run_flask, daemon=True).start()
 start_background_updates()
-while True:
-    try:
-        bot.polling(non_stop=True)
-    except Exception as e:
-        print(f"[ERRO] Bot polling falhou: {e}")
-        print("[INFO] Reconectando em 5 segundos...")
-        time.sleep(5)
+bot.infinity_polling(skip_pending=True)
