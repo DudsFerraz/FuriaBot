@@ -1,6 +1,10 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
 import telebot
-api_key = "7524292392:AAH4KUVdlXS7Mxuwvc9NwjwlQqMVR90Ys5M"
-bot = telebot.TeleBot(api_key)
+bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
 import requests
 from bs4 import BeautifulSoup
