@@ -54,16 +54,24 @@ def format_date(unix):
 
 def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
+    chrome_options.binary_location = "/usr/bin/google-chrome"
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--disable-software-rasterizer")
-    chrome_options.add_argument("--disable-3d-apis")
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.add_argument("--disable-setuid-sandbox")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-background-networking")
+    chrome_options.add_argument("--disable-default-apps")
+    chrome_options.add_argument("--disable-sync")
+    chrome_options.add_argument("--metrics-recording-only")
+    chrome_options.add_argument("--mute-audio")
+    chrome_options.add_argument("--no-first-run")
+    chrome_options.add_argument("--no-zygote")
+    chrome_options.add_argument("--password-store=basic")
+    chrome_options.add_argument("--use-gl=swiftshader")
     chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                                  "AppleWebKit/537.36 (KHTML, like Gecko) "
                                  "Chrome/124.0.0.0 Safari/537.36")
@@ -72,12 +80,13 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
 
     global my_service
     browser = webdriver.Chrome(service=my_service, options=chrome_options)
+
     browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
         """
     })
-    
+
     browser.get(url)
     time.sleep(3)
 
@@ -91,8 +100,6 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
     soup = BeautifulSoup(browser.page_source, "html.parser")
     browser.quit()
     return soup
-
-
 
 def start_background_updates():
     print("\n\n[STARTUP] Iniciando atualizações iniciais...\n\n")
