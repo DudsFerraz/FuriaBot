@@ -57,55 +57,49 @@ def format_date(unix):
 
 def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/chromium"
+    chrome_options.binary_location = "/usr/bin/google-chrome"  # Caminho corrigido
     chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--disable-infobars")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
-    service = Service(executable_path='/usr/bin/chromedriver')
-    browser = webdriver.Chrome(service=service, options=chrome_options)
-
+    service = Service(
+        executable_path='/usr/bin/chromedriver',
+        service_args=['--verbose']
+    )
+    
     try:
+        browser = webdriver.Chrome(service=service, options=chrome_options)
+        
         browser.execute_cdp_cmd(
             "Page.addScriptToEvaluateOnNewDocument", {
                 "source": """
-                    Object.defineProperty(navigator, 'webdriver', {
-                        get: () => undefined
-                    });
-                    window.navigator.chrome = {
-                        app: {},
-                        runtime: {},
-                    };
-                    """
+                    Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                    window.navigator.chrome = {app: {}, runtime: {}};
+                """
             }
         )
 
         browser.get(url)
-        
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.TAG_NAME, 'body'))
-        )
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
         try:
             WebDriverWait(browser, 5).until(
                 EC.element_to_be_clickable((By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"))
             ).click()
-        except Exception as e:
+        except Exception:
             pass
 
         soup = BeautifulSoup(browser.page_source, "html.parser")
         
     except Exception as e:
-        logging.error(f"Error during scraping: {str(e)}")
+        logging.error(f"Scraping error: {str(e)}")
         raise
     finally:
-        browser.quit()
+        if 'browser' in locals():
+            browser.quit()
 
     return soup
 
