@@ -1,7 +1,7 @@
-# Usa Python mais completo com sistema base decente
+# Usa Python 3.12 com sistema operacional Debian Bullseye
 FROM python:3.12-bullseye
 
-# Atualiza e instala Chrome + ChromeDriver + dependências
+# Instala dependências necessárias
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -24,17 +24,18 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-# Instala Google Chrome
+# Instala Google Chrome estável
 RUN curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
     apt-get update && apt-get install -y google-chrome-stable
 
-# Instala ChromeDriver compatível
-RUN CHROME_VERSION=$(google-chrome-stable --version | sed 's/[^0-9.]//g' | cut -d'.' -f1) && \
-    DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}") && \
-    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip" && \
-    unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/chromedriver
+# Instala ChromeDriver de versão compatível manualmente (versão fixa)
+RUN CHROMEDRIVER_VERSION=124.0.6367.91 && \
+    wget -O /tmp/chromedriver.zip "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip" && \
+    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
+    mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm -rf /tmp/chromedriver.zip
 
 # Define diretório de trabalho
 WORKDIR /app
@@ -46,7 +47,7 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Porta padrão (só se precisar Flask ou algo parecido)
+# Porta padrão
 ENV PORT=8080
 
 # Expõe porta
