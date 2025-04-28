@@ -1,7 +1,7 @@
-# Use Python base image
+# Base Image
 FROM python:3.12-slim
 
-# Set environment variables
+# Set Environment Variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     gnupg \
+    jq \ 
     ca-certificates \
     fonts-liberation \
     libappindicator3-1 \
@@ -37,23 +38,24 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
     && apt-get update \
     && apt-get install -y google-chrome-stable
 
-# Install ChromeDriver
-RUN CHROMEDRIVER_VERSION="135.0.0.0" && \
+# Install ChromeDriver matching Chrome version
+RUN CHROME_VERSION=$(google-chrome-stable --version | sed 's/Google Chrome //;s/ .*//') && \
+    CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r ".versions[] | select(.version|startswith(\"${CHROME_VERSION%.*}\")) | .version" | head -n 1) && \
     wget -O /tmp/chromedriver.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip && \
     unzip /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /usr/local/bin/ && \
     mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
     chmod +x /usr/local/bin/chromedriver && \
     rm -rf /tmp/chromedriver.zip /usr/local/bin/chromedriver-linux64
 
-# Set working directory
+# Set Working Directory
 WORKDIR /app
 
-# Copy project files
+# Copy Project Files
 COPY . .
 
-# Install Python dependencies
+# Install Python Requirements
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Command to run the bot
+# Start the bot
 CMD ["python", "src/chatBot.py"]
