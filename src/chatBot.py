@@ -8,7 +8,6 @@ import datetime
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import threading
 
@@ -16,7 +15,7 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
-my_service = Service(ChromeDriverManager().install())
+my_service = Service("/usr/local/bin/chromedriver")
 
 lineup_cs_names = []
 lineup_cs = []
