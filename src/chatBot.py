@@ -56,31 +56,32 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1920x1080")
+    chrome_options.add_argument("--remote-debugging-port=9222") # necessário no Alpine
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                "Chrome/124.0.0.0 Safari/537.36")
+                                 "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                 "Chrome/124.0.0.0 Safari/537.36")
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option("useAutomationExtension", False)
 
-    service = Service("/usr/local/bin/chromedriver")
+    service = Service("/usr/bin/chromedriver")
     browser = webdriver.Chrome(service=service, options=chrome_options)
 
     browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
-        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-        """})
-    
+        "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+    })
+
     browser.get(url)
     time.sleep(3)
 
     try:
-        allowCookies = browser.find_element("id","CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
+        allowCookies = browser.find_element("id", "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
         allowCookies.click()
         time.sleep(1)
     except Exception:
         pass
 
-    soup = BeautifulSoup(browser.page_source,"html.parser")
+    soup = BeautifulSoup(browser.page_source, "html.parser")
     browser.quit()
     return soup
 
