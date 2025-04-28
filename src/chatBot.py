@@ -10,8 +10,12 @@ import time
 from selenium.webdriver.chrome.options import Options
 import threading
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import logging
 
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -59,32 +63,50 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                 "Chrome/124.0.0.0 Safari/537.36")
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
-    service = Service(ChromeDriverManager().install())
+    service = Service(executable_path='/usr/bin/chromedriver')
     browser = webdriver.Chrome(service=service, options=chrome_options)
 
-    browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
-    })
-
-    browser.get(url)
-    time.sleep(3)
-
     try:
-        allowCookies = browser.find_element("id", "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
-        allowCookies.click()
-        time.sleep(1)
-    except Exception:
-        pass
+        browser.execute_cdp_cmd(
+            "Page.addScriptToEvaluateOnNewDocument", {
+                "source": """
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                    window.navigator.chrome = {
+                        app: {},
+                        runtime: {},
+                    };
+                    """
+            }
+        )
 
-    soup = BeautifulSoup(browser.page_source, "html.parser")
-    browser.quit()
+        browser.get(url)
+        
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, 'body'))
+        )
+
+        try:
+            WebDriverWait(browser, 5).until(
+                EC.element_to_be_clickable((By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"))
+            ).click()
+        except Exception as e:
+            pass
+
+        soup = BeautifulSoup(browser.page_source, "html.parser")
+        
+    except Exception as e:
+        logging.error(f"Error during scraping: {str(e)}")
+        raise
+    finally:
+        browser.quit()
+
     return soup
 
 def start_background_updates():
