@@ -53,6 +53,7 @@ def format_date(unix):
 
 def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options = Options()
+    chrome_options.binary_location = "/usr/bin/chromium"
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
