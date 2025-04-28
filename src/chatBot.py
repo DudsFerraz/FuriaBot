@@ -57,7 +57,7 @@ def format_date(unix):
 
 def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/google-chrome"  # Caminho corrigido
+    chrome_options.binary_location = "/usr/bin/google-chrome"
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -67,7 +67,7 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
 
     service = Service(
         executable_path='/usr/bin/chromedriver',
-        service_args=['--verbose']
+        service_args=['--verbose','--log-path=/tmp/chromedriver.log']
     )
     
     try:
