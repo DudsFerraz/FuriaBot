@@ -9,6 +9,7 @@ from selenium import webdriver
 import time
 from selenium.webdriver.chrome.options import Options
 import threading
+from selenium.webdriver.chrome.service import Service
 
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -61,10 +62,9 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option("useAutomationExtension", False)
 
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.binary_location = "/usr/bin/google-chrome"
+    service = Service("/usr/local/bin/chromedriver")
+    browser = webdriver.Chrome(service=service, options=chrome_options)
 
-    browser = webdriver.Chrome(options=chrome_options)
     browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
