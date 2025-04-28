@@ -5,28 +5,18 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import datetime
-from selenium import webdriver
 import time
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import threading
-import logging
-from flask import Flask
 
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return 'Bot is running.'
-
-def run_flask():
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-
-logging.basicConfig(level=logging.INFO)
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
-threading.Thread(target=run_flask, daemon=True).start()
+
+my_service = Service(ChromeDriverManager().install())
 
 lineup_cs_names = []
 lineup_cs = []
@@ -75,7 +65,8 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option("useAutomationExtension", False)
 
-    browser = webdriver.Chrome(options=chrome_options)
+    global my_service
+    browser = webdriver.Chrome(service=my_service,options=chrome_options)
     browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
