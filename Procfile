@@ -1,1 +1,1 @@
-web: python src/chatBot.py
+worker: python src/chatBot.py

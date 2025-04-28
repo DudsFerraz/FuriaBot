@@ -9,7 +9,6 @@ from selenium import webdriver
 import time
 from selenium.webdriver.chrome.options import Options
 import threading
-from flask import Flask
 
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -41,17 +40,6 @@ matches_kl_html = ""
 matches_kl_text = ""
 table_kl_html = ""
 table_kl_text = ""
-
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return 'Bot is running.'
-
-def run_flask():
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
 
 def escape_markdown_v2(text: str) -> str:
     escape_chars = r'_*[]()~`>#+-=|{}.!'
@@ -89,7 +77,7 @@ def stealth_html_getter(url: str) -> BeautifulSoup:
         allowCookies = browser.find_element("id","CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
         allowCookies.click()
         time.sleep(1)
-    except:
+    except Exception:
         pass
 
     soup = BeautifulSoup(browser.page_source,"html.parser")
@@ -689,6 +677,5 @@ Para que possamos interagir, escolha uma das opções abaixo:
 """
     bot.send_message(message.chat.id,text,parse_mode="MarkdownV2")
 
-threading.Thread(target=run_flask, daemon=True).start()
 start_background_updates()
 bot.infinity_polling(skip_pending=True)
