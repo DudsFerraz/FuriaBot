@@ -132,12 +132,14 @@ def update_results_cs(fem: bool):
     if(fem):
         results_cs_html_fe = stealth_html_getter("https://www.hltv.org/results?team=10976")
         results_cs_text_fe = set_results_cs(results_cs_html_fe,True)
-        threading.Timer(180, update_results_cs, args=(True,)).start()  # 3 minutos
+        threading.Timer(172800, update_results_cs, args=(True,)).start() # 48 horas
+        #threading.Timer(180, update_results_cs, args=(True,)).start()  # 3 minutos
         print("[RESULTS_CS_FE ATUALIZADO]\n")
     else:    
         results_cs_html = stealth_html_getter("https://www.hltv.org/results?team=8297")
         results_cs_text = set_results_cs(results_cs_html,False)
-        threading.Timer(180, update_results_cs, args=(False,)).start()  # 3 minutos
+        threading.Timer(172800, update_results_cs, args=(False,)).start() # 48 horas
+        #threading.Timer(180, update_results_cs, args=(False,)).start()  # 3 minutos
         print("[RESULTS_CS ATUALIZADO]\n")
 
 def update_tournaments_cs(fem: bool):
@@ -149,12 +151,14 @@ def update_tournaments_cs(fem: bool):
     if(fem):
         tournaments_cs_html_fe = stealth_html_getter("https://www.hltv.org/team/10976/furia-fe#tab-eventsBox")
         tournaments_cs_text_fe = set_tournaments_cs(tournaments_cs_html_fe,True)
-        threading.Timer(7620, update_tournaments_cs, args=(True,)).start()  # 2 horas e 7 minutos (7620s)
+        threading.Timer(173000, update_tournaments_cs, args=(True,)).start() # 48 horas
+        #threading.Timer(7620, update_tournaments_cs, args=(True,)).start()  # 2 horas e 7 minutos (7620s)
         print("[TOURNAMENTS_CS_FE ATUALIZADO]\n")
     else:    
         tournaments_cs_html = stealth_html_getter("https://www.hltv.org/team/8297/furia#tab-eventsBox")
         tournaments_cs_text = set_tournaments_cs(tournaments_cs_html,False)
-        threading.Timer(7620, update_tournaments_cs, args=(False,)).start()  # 2 horas e 7 minutos (7620s)
+        threading.Timer(173000, update_tournaments_cs, args=(False,)).start() # 48 horas
+        #threading.Timer(7620, update_tournaments_cs, args=(False,)).start()  # 2 horas e 7 minutos (7620s)
         print("[TOURNAMENTS_CS ATUALIZADO]\n")
 
 def update_matches_cs(fem: bool):
@@ -166,12 +170,14 @@ def update_matches_cs(fem: bool):
     if(fem):
         matches_cs_html_fe = stealth_html_getter("https://www.hltv.org/team/10976/furia-fe#tab-matchesBox")
         matches_cs_text_fe = set_matches_cs(matches_cs_html_fe,True)
-        threading.Timer(600, update_matches_cs, args=(True,)).start()  # 10 minutos
+        threading.Timer(175000, update_matches_cs, args=(True,)).start() # 48 horas
+        #threading.Timer(600, update_matches_cs, args=(True,)).start()  # 10 minutos
         print("[MATCHES_CS_FE ATUALIZADO]\n")
     else:    
         matches_cs_html = stealth_html_getter("https://www.hltv.org/team/8297/furia#tab-matchesBox")
         matches_cs_text = set_matches_cs(matches_cs_html,False)
-        threading.Timer(600, update_matches_cs, args=(False,)).start()  # 10 minutos
+        threading.Timer(175000, update_matches_cs, args=(False,)).start() # 48 horas
+        #threading.Timer(600, update_matches_cs, args=(False,)).start()  # 10 minutos
         print("[MATCHES_CS ATUALIZADO]\n")
 
 def update_lineup_cs(fem: bool):
@@ -188,13 +194,15 @@ def update_lineup_cs(fem: bool):
         lineup_cs_html_fe = stealth_html_getter("https://www.hltv.org/team/10976/furia-fe#tab-rosterBox")
         set_lineup_cs(lineup_cs_html_fe,lineup_cs_names_fe,lineup_cs_fe)
         lineup_cs_text_fe = set_lineup_cs_text(lineup_cs_fe,True)
-        threading.Timer(3720, update_lineup_cs, args=(True,)).start()  # 1 hora e 2 minutos (3720s)
+        threading.Timer(604800, update_lineup_cs, args=(True,)).start() # 1 semana
+        #threading.Timer(3720, update_lineup_cs, args=(True,)).start()  # 1 hora e 2 minutos (3720s)
         print("[LINEUP_CS_FE ATUALIZADO]\n")
     else:    
         lineup_cs_html = stealth_html_getter("https://www.hltv.org/team/8297/furia#tab-rosterBox")
         set_lineup_cs(lineup_cs_html,lineup_cs_names,lineup_cs)
         lineup_cs_text = set_lineup_cs_text(lineup_cs,False)
-        threading.Timer(3720, update_lineup_cs, args=(False,)).start()  # 1 hora e 2 minutos (3720s)
+        threading.Timer(604800, update_lineup_cs, args=(True,)).start() # 1 semana
+        #threading.Timer(3720, update_lineup_cs, args=(False,)).start()  # 1 hora e 2 minutos (3720s)
         print("[LINEUP_CS ATUALIZADO]\n")
 
 def update_matches_kl():
@@ -203,7 +211,8 @@ def update_matches_kl():
 
     matches_kl_html = stealth_html_getter("https://kingsleague.pro/pt/times/50-furia-fc")
     matches_kl_text = set_matches_kl(matches_kl_html)
-    threading.Timer(600,update_matches_kl).start()
+    threading.Timer(86400,update_matches_kl).start() # 1 dia
+    #threading.Timer(600,update_matches_kl).start()
 
     print("[MATCHES_KL ATUALIZADO]")
 
@@ -213,7 +222,8 @@ def update_table_kl():
 
     table_kl_html = stealth_html_getter("https://kingsleague.pro/pt/brazil/classificacao")
     table_kl_text = set_table_kl(table_kl_html)
-    threading.Timer(3720,update_table_kl).start()
+    threading.Timer(86400,update_table_kl).start() # 1 dia
+    #threading.Timer(3720,update_table_kl).start()
 
     print("[TABLE_KL ATUALIZADO]")
 
