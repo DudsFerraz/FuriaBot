@@ -255,7 +255,8 @@ def news_cs(message):
     headlines = soup.find_all(is_furia_news)[:5]
 
     if not headlines:
-        bot.send_message(message.chat.id, "Nenhuma notícia encontrada sobre a FURIA ou seus jogadores.", parse_mode="MarkdownV2")
+        no_news_text = escape_markdown_v2("Nenhuma notícia recente encontrada sobre a FURIA ou seus jogadores em https://www.dust2.com.br/")
+        bot.send_message(message.chat.id, no_news_text, parse_mode="MarkdownV2")
         return
 
     text = "*📰 Últimas Notícias da FURIA CS:*\n\n"
